@@ -7,10 +7,10 @@ import { Button } from "./ui/button";
 
 export default function AddTodo({
   addTodo,
-  clearAllTodos,
+  clearDialogOpen,
 }: {
   addTodo: (todo: Todo) => void;
-  clearAllTodos: () => void;
+  clearDialogOpen: (value: boolean) => void;
 }) {
   const [todo, setTodo] = useState<Todo>({
     id: "",
@@ -95,7 +95,7 @@ export default function AddTodo({
         >
           Add
         </Button>
-        <Button variant="destructive" onClick={clearAllTodos}>
+        <Button variant="destructive" onClick={() => clearDialogOpen(true)}>
           Clear
         </Button>
       </div>
