@@ -6,25 +6,48 @@ import { Select } from "./ui/select";
 import { Button } from "./ui/button";
 
 export default function AddTodo({
+  editingTodo,
+  handleEditTodo,
+  canClear,
   addTodo,
   clearDialogOpen,
 }: {
+  editingTodo: Todo | null;
+  handleEditTodo: (updatedTodo: Todo) => void;
+  canClear: boolean;
   addTodo: (todo: Todo) => void;
   clearDialogOpen: (value: boolean) => void;
 }) {
-  const [todo, setTodo] = useState<Todo>({
-    id: "",
-    title: "",
-    description: "",
-    status: "pending",
-    priority: "low",
-    createdAt: 0,
+  const [todo, setTodo] = useState<Todo>(() => {
+    if (editingTodo !== null) {
+      return editingTodo;
+    } else {
+      return {
+        id: "",
+        title: "",
+        description: "",
+        status: "pending",
+        priority: "low",
+        createdAt: 0,
+      };
+    }
   });
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     // Disable form refresh behavior
     e.preventDefault();
 
+    // If we are editing an existing todo
+    if (editingTodo) {
+      const updatedTodo = {
+        ...todo,
+        id: editingTodo.id,
+        createdAt: editingTodo.createdAt,
+      };
+      handleEditTodo(updatedTodo);
+      // Currently editing, so we do not add a new todo
+      return;
+    }
     // We crete a new todo object to get the latest createdAt date
     const newTodo = {
       ...todo,
@@ -33,7 +56,7 @@ export default function AddTodo({
     };
 
     // Confirming title is present
-    if (!newTodo.title) {
+    if (!newTodo.title.trim()) {
       // Edge case
       alert("Title is required");
       return;
@@ -61,7 +84,7 @@ export default function AddTodo({
         placeholder="Enter todo title"
         type="text"
         value={todo?.title}
-        onChange={(e) => setTodo({ ...todo, title: e.target.value.trim() })}
+        onChange={(e) => setTodo({ ...todo, title: e.target.value })}
       />
       <Input
         id="description"
@@ -69,9 +92,7 @@ export default function AddTodo({
         placeholder="Enter todo description"
         type="text"
         value={todo?.description}
-        onChange={(e) =>
-          setTodo({ ...todo, description: e.target.value.trim() })
-        }
+        onChange={(e) => setTodo({ ...todo, description: e.target.value })}
       />
 
       <Select
@@ -80,22 +101,36 @@ export default function AddTodo({
         onChange={(e) =>
           setTodo({ ...todo, priority: e.target.value as Todo["priority"] })
         }
-        defaultValue={todo.priority}
+        value={todo.priority}
       >
         <option value="low">Low</option>
         <option value="medium">Medium</option>
         <option value="high">High</option>
       </Select>
 
+      {/* show some ux  */}
+      {editingTodo ? (
+        <p className="text-sm text-gray-600">
+          Editing Todo created on:{" "}
+          <b>
+            {new Date(editingTodo.createdAt).toLocaleDateString(undefined, {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })}
+          </b>{" "}
+          and status: <b>{editingTodo.status}</b>
+        </p>
+      ) : null}
       <div className="flex gap-3">
-        <Button
-          type="submit"
-          disabled={todo.title.trim().length === 0}
-          variant="default"
-        >
-          Add
+        <Button type="submit" variant="default">
+          {editingTodo ? "Save" : "Add"}
         </Button>
-        <Button variant="destructive" onClick={() => clearDialogOpen(true)}>
+        <Button
+          disabled={!canClear || editingTodo !== null}
+          variant="destructive"
+          onClick={() => clearDialogOpen(true)}
+        >
           Clear
         </Button>
       </div>

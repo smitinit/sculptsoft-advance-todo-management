@@ -13,7 +13,8 @@ export function Button({
   type = "button",
   ...props
 }: ButtonProps) {
-  const base = "font-bold py-2 px-4 rounded transition focus:outline-none";
+  const base =
+    "font-bold py-2 px-4 rounded transition focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variants = {
     default: "bg-blue-500 hover:bg-blue-700 text-white",
