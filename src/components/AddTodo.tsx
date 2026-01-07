@@ -1,11 +1,16 @@
 import { useState } from "react";
 
 import type { Todo } from "../type";
+import { Input } from "./ui/input";
+import { Select } from "./ui/select";
+import { Button } from "./ui/button";
 
 export default function AddTodo({
   addTodo,
+  clearAllTodos,
 }: {
   addTodo: (todo: Todo) => void;
+  clearAllTodos: () => void;
 }) {
   const [todo, setTodo] = useState<Todo>({
     id: "",
@@ -36,48 +41,64 @@ export default function AddTodo({
 
     // Adding the new todo to the todo list
     addTodo(newTodo);
+
+    // Resetting the form
+    setTodo({
+      id: "",
+      title: "",
+      description: "",
+      status: "pending",
+      priority: "low",
+      createdAt: 0,
+    });
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h1>Add Todos!</h1>
-      <label htmlFor="title">Todo Title: </label>
-      <input
+    <form onSubmit={handleSubmit} className="space-y-4 my-4">
+      <Input
         id="title"
-        type="title"
-        name="title"
-        onChange={(e) => setTodo({ ...todo, title: e.target.value.trim() })}
+        label="Todo Title"
+        placeholder="Enter todo title"
+        type="text"
         value={todo?.title}
+        onChange={(e) => setTodo({ ...todo, title: e.target.value.trim() })}
       />
-      <label htmlFor="description">Todo Description: </label>
-      <input
+      <Input
         id="description"
-        type="description"
-        name="description"
+        label="Todo Description"
+        placeholder="Enter todo description"
+        type="text"
+        value={todo?.description}
         onChange={(e) =>
           setTodo({ ...todo, description: e.target.value.trim() })
         }
-        value={todo?.description}
       />
-      <select
-        name="priority"
+
+      <Select
+        label="Priority"
         id="priority"
-        value={todo?.priority}
         onChange={(e) =>
           setTodo({ ...todo, priority: e.target.value as Todo["priority"] })
         }
+        defaultValue={todo.priority}
       >
         <option value="low">Low</option>
         <option value="medium">Medium</option>
         <option value="high">High</option>
-      </select>
-      <button
-        type="submit"
-        value="submit"
-        disabled={todo.title.trim().length === 0}
-      >
-        Add
-      </button>
+      </Select>
+
+      <div className="flex gap-3">
+        <Button
+          type="submit"
+          disabled={todo.title.trim().length === 0}
+          variant="default"
+        >
+          Add
+        </Button>
+        <Button variant="destructive" onClick={clearAllTodos}>
+          Clear
+        </Button>
+      </div>
     </form>
   );
 }

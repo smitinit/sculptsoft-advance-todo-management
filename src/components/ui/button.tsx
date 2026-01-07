@@ -1,0 +1,32 @@
+import type React from "react";
+
+type ButtonVariant = "default" | "destructive";
+
+type ButtonProps = {
+  variant?: ButtonVariant;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>;
+
+export function Button({
+  variant = "default",
+  className = "",
+  children,
+  type = "button",
+  ...props
+}: ButtonProps) {
+  const base = "font-bold py-2 px-4 rounded transition focus:outline-none";
+
+  const variants = {
+    default: "bg-blue-500 hover:bg-blue-700 text-white",
+    destructive: "bg-red-500 hover:bg-red-700 text-white",
+  };
+
+  return (
+    <button
+      type={type}
+      className={`${base} ${variants[variant]} ${className}`}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
