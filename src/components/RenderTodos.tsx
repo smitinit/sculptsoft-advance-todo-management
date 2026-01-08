@@ -1,6 +1,8 @@
+import { formatDate } from "../lib/util";
 import type { Todo } from "../type";
 import { Button } from "./ui/button";
 
+// All table headings in a array
 const TableHeadings = [
   "Sr.No.",
   "Title",
@@ -13,13 +15,14 @@ const TableHeadings = [
 ];
 export default function RenderTodos({
   todos,
-  markAsCompleted,
+  toggleTodoStatus,
   setEditingTodo,
 }: {
   todos: Todo[];
-  markAsCompleted: (id: string) => void;
+  toggleTodoStatus: (id: string) => void;
   setEditingTodo: (todo: Todo) => void;
 }) {
+  // Fallback on todos.length = 0
   if (todos.length === 0) {
     return (
       <p className="text-center mt-10 text-lg font-medium">
@@ -50,34 +53,27 @@ export default function RenderTodos({
                 status === "completed" ? "line-through text-gray-500" : "";
 
               // Format createdAt date
-              const createdDate = new Date(createdAt);
-              const createdAtFormatted = createdDate.toLocaleDateString(
-                undefined,
-                {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                }
-              );
+              const formattedDate = formatDate(createdAt);
               return (
                 <tr key={id} className={strikethroughClass}>
                   <td className="p-4">{index + 1}</td>
                   <td className="text-left wrap-break-word whitespace-normal max-w-2xs p-4">
                     {title}
                   </td>
-                  <td className="text-left wrap-break-word whitespace-normal max-w-xs p-4">
+                  <td className="wrap-break-word whitespace-normal max-w-xs p-2">
                     {description}
                   </td>
                   <td>{priority}</td>
-                  <td>{createdAtFormatted}</td>
+                  <td>{formattedDate}</td>
                   <td>{status === "pending" ? "Pending" : "Completed"}</td>
                   <td>
                     <Button
                       variant="default"
-                      disabled={status === "completed"}
-                      onClick={() => markAsCompleted(id)}
+                      onClick={() => toggleTodoStatus(id)}
                     >
-                      {status === "pending" ? "Mark as completed" : "completed"}
+                      {status === "pending"
+                        ? "Mark as completed"
+                        : "Mark as Pending"}
                     </Button>
                   </td>
                   <td>

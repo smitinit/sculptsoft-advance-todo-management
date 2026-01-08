@@ -4,8 +4,9 @@ import type { Todo } from "../type";
 import { Input } from "./ui/input";
 import { Select } from "./ui/select";
 import { Button } from "./ui/button";
+import { formatDate } from "../lib/util";
 
-export default function AddTodo({
+export default function TodoForm({
   editingTodo,
   handleEditTodo,
   canClear,
@@ -18,6 +19,7 @@ export default function AddTodo({
   addTodo: (todo: Todo) => void;
   clearDialogOpen: (value: boolean) => void;
 }) {
+  // Form todo state(store)
   const [todo, setTodo] = useState<Todo>(() => {
     if (editingTodo !== null) {
       return editingTodo;
@@ -33,24 +35,39 @@ export default function AddTodo({
     }
   });
 
+  // Submit function handles both add/update todo
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     // Disable form refresh behavior
     e.preventDefault();
 
     // If we are editing an existing todo
     if (editingTodo) {
+      if (todo.title.trim().length === 0) {
+        alert("Title is required");
+        return;
+      }
       const updatedTodo = {
         ...todo,
+        // trim the whitespace on title and description
+        title: todo.title.trim(),
+        description: todo.description!.trim(),
         id: editingTodo.id,
         createdAt: editingTodo.createdAt,
       };
+
+      // call the mutate function
       handleEditTodo(updatedTodo);
+
       // Currently editing, so we do not add a new todo
       return;
     }
+
     // We crete a new todo object to get the latest createdAt date
     const newTodo = {
       ...todo,
+      // trim the whitespace on title and description
+      title: todo.title.trim(),
+      description: todo.description!.trim(),
       id: crypto.randomUUID(),
       createdAt: Date.now(),
     };
@@ -76,6 +93,7 @@ export default function AddTodo({
     });
   }
 
+  const formattedDate = formatDate(editingTodo?.createdAt);
   return (
     <form onSubmit={handleSubmit} className="space-y-4 my-4">
       <Input
@@ -108,20 +126,15 @@ export default function AddTodo({
         <option value="high">High</option>
       </Select>
 
-      {/* show some ux  */}
+      {/* Show  UX when editing todo  */}
       {editingTodo ? (
-        <p className="text-sm text-gray-600">
-          Editing Todo created on:{" "}
-          <b>
-            {new Date(editingTodo.createdAt).toLocaleDateString(undefined, {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            })}
-          </b>{" "}
-          and status: <b>{editingTodo.status}</b>
+        <p className="text-sm text-gray-600 underline">
+          Editing Todo created on: <b>{formattedDate}</b> and status:{" "}
+          <b>{editingTodo.status}</b>
         </p>
       ) : null}
+
+      {/* Action Buttons */}
       <div className="flex gap-3">
         <Button type="submit" variant="default">
           {editingTodo ? "Save" : "Add"}

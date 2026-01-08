@@ -1,18 +1,13 @@
 import { useEffect, useState } from "react";
-import AddTodo from "./components/TodoForm";
+
+import TodoForm from "./components/TodoForm";
 import RenderTodos from "./components/RenderTodos";
-import { Dialog } from "./components/ui/dialog";
-import { Button } from "./components/ui/button";
 import FilterTodo from "./components/FilterTodos";
 
-type Todo = {
-  id: string;
-  title: string;
-  description?: string;
-  status: "pending" | "completed";
-  priority: "low" | "medium" | "high";
-  createdAt: number;
-};
+import { Dialog } from "./components/ui/dialog";
+import { Button } from "./components/ui/button";
+
+import type { Todo } from "./type";
 
 export default function App() {
   // Dialog state
@@ -28,9 +23,10 @@ export default function App() {
     }
   });
 
-  // persist the editing todo to pass it in the form
+  // Persist the editing todo to pass it in the form
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
 
+  // Scroll to top when click on edit todo
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [editingTodo]);
@@ -54,15 +50,17 @@ export default function App() {
   }
 
   // Function to mark a todo as completed
-  function markTodoAsCompleted(id: string) {
+  function toggleTodoStatus(id: string) {
     setTodos((prevTodos) =>
-      prevTodos.map((todo) =>
-        todo.id === id ? { ...todo, status: "completed" } : todo
-      )
+      prevTodos.map((todo) => {
+        const activeStatus =
+          todo.status === "completed" ? "pending" : "completed";
+        return todo.id === id ? { ...todo, status: activeStatus } : todo;
+      })
     );
   }
 
-  // Filters
+  // Both Filters
   // Priority filter
   function filterByPriority(priority: string) {
     setPriorityFilter(priority as "all" | "low" | "medium" | "high");
@@ -73,7 +71,7 @@ export default function App() {
     setStatusFilter(status as "all" | "pending" | "completed");
   }
 
-  // edit todo
+  // Edit todo
   function handleEditTodo(updatedTodo: Todo) {
     setTodos((prevTodos) =>
       prevTodos.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo))
@@ -101,7 +99,9 @@ export default function App() {
       <h1 className="text-2xl text-center my-10">
         Advance Todo Management System
       </h1>
-      <AddTodo
+
+      {/* Todo add / update form */}
+      <TodoForm
         key={editingTodo && editingTodo.id}
         editingTodo={editingTodo}
         handleEditTodo={handleEditTodo}
@@ -109,6 +109,8 @@ export default function App() {
         addTodo={addTodo}
         clearDialogOpen={setClearDialogOpen}
       />
+
+      {/* Filter todo buttons */}
       <FilterTodo
         filterByPriority={filterByPriority}
         filterByStatus={filterByStatus}
@@ -116,23 +118,25 @@ export default function App() {
         status={statusFilter}
         canFilter={todos.length > 0}
       />
+
+      {/* Render the list of todo in tabular format */}
       <RenderTodos
         todos={filteredTodos}
-        markAsCompleted={markTodoAsCompleted}
+        toggleTodoStatus={toggleTodoStatus}
         setEditingTodo={setEditingTodo}
       />
 
-      {/* Delete Confirmation Dialog */}
+      {/* Delete Confirmation Dialog -> root level */}
       <Dialog
         open={clearDialogOpen}
-        title="Delete Todo"
+        title="Clear All Todo!"
         description="This action cannot be undone."
         onClose={() => setClearDialogOpen(false)}
       >
         <div className="flex justify-end gap-2 mt-6">
-          <Button onClick={() => setClearDialogOpen(false)}>Cancel</Button>
+          <Button onClick={() => setClearDialogOpen(false)}>No</Button>
           <Button variant="destructive" onClick={clearAllTodos}>
-            Delete
+            Yes, Clear
           </Button>
         </div>
       </Dialog>

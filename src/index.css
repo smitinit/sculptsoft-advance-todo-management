@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* Animation for dialog */
 @keyframes fadeIn {
   from {
     opacity: 0;

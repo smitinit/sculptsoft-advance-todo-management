@@ -16,8 +16,13 @@ export default function FilterTodo({
 }) {
   return (
     <div className="flex flex-col justify-center items-end w-full mb-4 gap-2">
-      <span>Filter by Priority and Status</span>
+      <span>
+        Filter by <b> Priority </b>
+        and
+        <b> Status</b>.
+      </span>
       <div className="flex gap-4">
+        {/* Clear filters */}
         <Button
           disabled={priority === "all" && status === "all"}
           onClick={() => {
@@ -27,25 +32,28 @@ export default function FilterTodo({
         >
           Clear
         </Button>
+
+        {/* Priority filter */}
         <Select
           id="priority"
           onChange={(e) => filterByPriority(e.target.value)}
           value={priority}
           disabled={!canFilter}
         >
-          <option value="all">All</option>
+          <option value="all">All (Priority)</option>
           <option value="low">Low</option>
           <option value="medium">Medium</option>
           <option value="high">High</option>
         </Select>
 
+        {/* Status filter */}
         <Select
           id="status"
           onChange={(e) => filterByStatus(e.target.value)}
           value={status}
           disabled={!canFilter}
         >
-          <option value="all">All</option>
+          <option value="all">All (Status)</option>
           <option value="pending">Pending</option>
           <option value="completed">Completed</option>
         </Select>
