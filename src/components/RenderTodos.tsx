@@ -64,7 +64,7 @@ export default function RenderTodos({
                     {title}
                   </td>
                   <td className="wrap-break-word whitespace-normal max-w-xs p-2">
-                    {description}
+                    {description ?? "No description"}
                   </td>
                   <td>{priority}</td>
                   <td>{formattedDate}</td>

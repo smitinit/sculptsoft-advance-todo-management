@@ -43,13 +43,13 @@ export function Dialog({
         <div className="text-slate-700 text-sm">{children}</div>
 
         {/* Close button */}
-        <button
+        {/* <button
           onClick={onClose}
           className="absolute top-3 right-3 text-slate-400 hover:text-slate-600 transition"
           aria-label="Close dialog"
         >
           x
-        </button>
+        </button> */}
       </div>
     </div>
   );
