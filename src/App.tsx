@@ -79,6 +79,15 @@ export default function App() {
     setEditingTodo(null);
   }
 
+  // Delete a todo
+  function deleteTodo(id: string) {
+    const choice = confirm("Are you sure, Delete this todo?");
+    if (!choice) return;
+    setTodos((prevTodo) => {
+      return prevTodo.filter((todo) => todo.id !== id);
+    });
+  }
+
   // Function to clear all todos
   function clearAllTodos() {
     localStorage.removeItem("todos");
@@ -124,6 +133,7 @@ export default function App() {
         todos={filteredTodos}
         toggleTodoStatus={toggleTodoStatus}
         setEditingTodo={setEditingTodo}
+        deleteTodo={deleteTodo}
       />
 
       {/* Delete Confirmation Dialog -> root level */}

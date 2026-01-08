@@ -12,15 +12,18 @@ const TableHeadings = [
   "Status",
   "Action",
   "Edit",
+  "Delete",
 ];
 export default function RenderTodos({
   todos,
   toggleTodoStatus,
   setEditingTodo,
+  deleteTodo,
 }: {
   todos: Todo[];
   toggleTodoStatus: (id: string) => void;
   setEditingTodo: (todo: Todo) => void;
+  deleteTodo: (id: string) => void;
 }) {
   // Fallback on todos.length = 0
   if (todos.length === 0) {
@@ -85,6 +88,14 @@ export default function RenderTodos({
                       }}
                     >
                       Edit
+                    </Button>
+                  </td>
+                  <td>
+                    <Button
+                      variant="destructive"
+                      onClick={() => deleteTodo(id)}
+                    >
+                      Delete
                     </Button>
                   </td>
                 </tr>
